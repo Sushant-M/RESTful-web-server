@@ -1,0 +1,6 @@
+curl -i -X GET localhost:8080/hello
+
+curl -i -H "Content-Type: application/json" -X POST -d '{
+    "ID": 1,
+    "time": 123
+    }' localhost:8080/update
