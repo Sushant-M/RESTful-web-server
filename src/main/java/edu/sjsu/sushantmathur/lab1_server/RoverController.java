@@ -1,6 +1,14 @@
 /* @Author: Sushant Amit Mathur. SJSU ID: 014489865*/
 package edu.sjsu.sushantmathur.lab1_server;
 
+import com.mongodb.DB;
+//import com.mongodb.DBCollection;
+import com.mongodb.DBCollection;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,32 +20,65 @@ public class RoverController {
      */
     public Rover rover1;
     public Rover rover2;
+    MongoCollection<Document> rover1Col;
+    MongoCollection<Document> rover2Col;
     RoverController(){
         rover1 = new Rover(1, "Spirit");
         rover2 = new Rover(2, "Opportunity");
+        MongoClient mongo = MongoClients.create("mongodb://localhost:27017/admin");
+        MongoDatabase database = mongo.getDatabase("Server");
+        rover1Col = database.getCollection("client1data");
+        rover2Col = database.getCollection("client2data");
     }
 
-    @PostMapping("/update")
+    //Create
+    @PostMapping(value = "/update" , consumes = "application/json")
     public ResponseEntity<ResponseMessage> replyRover(@RequestBody Message message){
-        /*Initialise previous time variable, this will be sent back to the rover,
-          this is the previous time we received. If it's the first message that
-          we have received then zero will be sent back. The getTime() method of
-          class Rover handles the same.
-         */
-        int prevTime=0;
         if(message.getID() == 1){
-            //In case it's rover 1, get it's previous time and send it back
-            prevTime = rover1.getTime();
-            rover1.writeData(message.getTime());
+            System.out.println(message.getTime() +" " + message.getXray()+ " " + message.getSunlight());
+            rover1.writeData(message.getTime(), message.getXray(), message.getSunlight(), message.getEmr(), rover1Col);
         }else if (message.getID() == 2){
-            //In case it's rover 2, get it's previous time and send it back
-            prevTime = rover2.getTime();
-            rover2.writeData(message.getTime());
+
+            rover2.writeData(message.getTime(), message.getXray(), message.getSunlight(), message.getEmr(), rover2Col);
         }
-        /*Generate the response message of form ResponseMessage, this is equal to
-          the RoverData message on the rover(client) end. Return the same.
-        */
-        ResponseMessage responseMessage = new ResponseMessage(message.getID(), prevTime);
+        ResponseMessage responseMessage = new ResponseMessage(message.getID(), 1);
         return new ResponseEntity<ResponseMessage>(responseMessage, HttpStatus.OK);
+    }
+
+
+    //Delete
+    @DeleteMapping(value = "delete/{id}/{time}")
+    public ResponseEntity<Long> deleteEntry(@PathVariable int id, @PathVariable int time){
+        if(id == 1){
+            rover1.deleteData(time, rover1Col);
+        }
+        else if(id==2){
+            rover2.deleteData(time, rover2Col);
+        }
+        return new ResponseEntity<Long>((long) id, HttpStatus.OK);
+    }
+
+    //Get
+    @GetMapping(value = "get/{id}/{time}")
+    public ResponseEntity<Message> getEntry(@PathVariable int id, @PathVariable int time){
+        Message msg = null;
+        if(id==1){
+            msg = rover1.getForTime(rover1Col, time);
+        }else if(id==2){
+            msg = rover2.getForTime(rover2Col, time);
+        }
+        return new ResponseEntity<Message>(msg, HttpStatus.OK);
+    }
+
+    //Modify
+    @PutMapping(value = "modify/{id}/{time}/{sun}")
+    public ResponseEntity<Message> putEntry(@PathVariable int id, @PathVariable int time, @PathVariable int sun){
+        Message msg = null;
+        if(id==1){
+            msg = rover1.modifyForTime(rover1Col, time, sun);
+        }else if(id==2){
+            msg = rover2.modifyForTime(rover2Col, time, sun);
+        }
+        return new ResponseEntity<Message>(msg, HttpStatus.OK);
     }
 }
