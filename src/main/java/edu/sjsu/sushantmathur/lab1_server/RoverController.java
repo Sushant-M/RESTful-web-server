@@ -1,9 +1,6 @@
 /* @Author: Sushant Amit Mathur. SJSU ID: 014489865*/
 package edu.sjsu.sushantmathur.lab1_server;
 
-import com.mongodb.DB;
-//import com.mongodb.DBCollection;
-import com.mongodb.DBCollection;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -38,7 +35,6 @@ public class RoverController {
             System.out.println(message.getTime() +" " + message.getXray()+ " " + message.getSunlight());
             rover1.writeData(message.getTime(), message.getXray(), message.getSunlight(), message.getEmr(), rover1Col);
         }else if (message.getID() == 2){
-
             rover2.writeData(message.getTime(), message.getXray(), message.getSunlight(), message.getEmr(), rover2Col);
         }
         ResponseMessage responseMessage = new ResponseMessage(message.getID(), 1);

@@ -67,7 +67,7 @@ public class Rover {
         int xray_send = (int)document.get("xray");
         int emr_send = (int)document.get("emr");
         int sunlight_send = (int)document.get("sunlight");
-        return new Message(rid, time_send, xray_send,sunlight_send,emr_send);
+        return new Message(rid, time_send, xray_send,emr_send,sunlight_send);
     }
 
 

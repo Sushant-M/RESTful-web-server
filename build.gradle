@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-dependencies:2.0.5.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
