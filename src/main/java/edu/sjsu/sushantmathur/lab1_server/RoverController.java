@@ -22,7 +22,7 @@ public class RoverController {
     RoverController(){
         rover1 = new Rover(1, "Spirit");
         rover2 = new Rover(2, "Opportunity");
-        MongoClient mongo = MongoClients.create("mongodb://localhost:27017/admin");
+        MongoClient mongo = MongoClients.create("mongodb+srv://admin:admin@sushant-lzxz7.mongodb.net/test?retryWrites=true&w=majority");
         MongoDatabase database = mongo.getDatabase("Server");
         rover1Col = database.getCollection("client1data");
         rover2Col = database.getCollection("client2data");
